@@ -12,7 +12,6 @@ class Produto(models.Model):
     alterado_em = models.DateTimeField(auto_now=True)
     image = models.ImageField(null=True, blank=True)
     msgPromocao = models.CharField(null=True, max_length=100, blank=True)
-    exclude = ('msgPromocao',)
 
     def __str__(self):
         return '{}'.format(self.Produto)
