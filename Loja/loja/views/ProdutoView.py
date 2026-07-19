@@ -145,6 +145,7 @@ def list_produto_view(request, id=None):
         fabricante = request.GET.get("fabricante")
         dias = request.GET.get("dias")
         produtos = Produto.objects.all()
+        categorias = Categoria.objects.all()
         #produtos = Produto.objects.all()
         #Produto.objects.first()
         #produtos = Produto.objects.filter(Produto=produto)
@@ -167,7 +168,11 @@ def list_produto_view(request, id=None):
             produtos = produtos.filter(id=id)
         print(produtos)
         # Adicione para definir o contexto e carregar o template
-        context = {'produtos': produtos}
+        context = {
+        'produtos': produtos
+        'categorias': categorias
+        }
         return render(request, template_name='produto/produto.html', context=context, status=200)
+        return render(request, template_name='categoria/categoria.html', context=context, status=200)
         #return HttpResponse('<h1>Produto de id %s!</h1>' % id)
 
