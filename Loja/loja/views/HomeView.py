@@ -13,7 +13,7 @@ def home_view(request):
         categorias = categorias.filter(Categoria__contains=categoria)
     
     context = {
-        'produtos': produtos
+        'produtos': produtos,
         'categorias': categorias
     }
     return render(request, template_name='home/home.html', context=context, status=200)

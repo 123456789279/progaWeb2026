@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Início{% endblock %}
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
 {% block content %}
 <div id="content">
@@ -35,8 +35,12 @@
                         <a href="{% url 'home' %}" class="btn btn-primary btn-card">
                             <i class="fa fa-search"></i> Ver
                         </a>
-                        <button class="btn btn-warning btn-card">
-                        <i class="fa fa-heart"></i> Favoritar</button>
+                        <a href="{% url 'adicionar_carrinho' prod.id %}" class="btn btn-success btn-card">
+                            <i class="fa fa-shopping-cart"></i> Comprar
+                        </a>
+                        <a href="{% url 'favoritar' prod.id %}" class="btn btn-warning btn-card">
+                            <i class="fa fa-heart"></i> Favoritar
+                        </a>
                     </div>
                 </div>
             </div>
@@ -46,5 +50,5 @@
 </div>
 {% endblock %}
 {% block scripts %}
-    <script src="{% static 'js/home.js' %}"></script>
+<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}

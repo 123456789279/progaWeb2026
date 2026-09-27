@@ -1,13 +1,11 @@
-# inclua o acesso ao redirect
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect # Retire from django.http import HttpResponse
-#Inclua as classes modelos de fabricante e categoria
 from loja.models import Produto, Fabricante, Categoria
 from datetime import timedelta, datetime
 from django.utils import timezone
-# inclua as bibliotecas FileSystemStorage
 from django.core.files.storage import FileSystemStorage
-# adicione a função que chama a interface de criar produto
-# no final do arquivo
+@login_required
+# Até aqui
 def create_produto_view(request, id=None):
     # Processa o post back gerado pela action
     if request.method == 'POST':
@@ -133,7 +131,10 @@ def edit_produto_view(request, id=None):
     #adicione a lista de fabricantes e categorias no context
     Fabricantes = Fabricante.objects.all()
     Categorias = Categoria.objects.all()
-    context = { 'produto': produto, 'fabricantes' : Fabricantes, 'categorias' : Categorias}
+    context = { 
+        'produto': produto, 
+        'fabricantes': Fabricantes, 
+        'categorias': Categorias}
     return render(request, template_name='produto/produto-edit.html', context=context, status=200)
 
 def list_produto_view(request, id=None):
@@ -169,10 +170,88 @@ def list_produto_view(request, id=None):
         print(produtos)
         # Adicione para definir o contexto e carregar o template
         context = {
-        'produtos': produtos
+        'produtos': produtos,
         'categorias': categorias
         }
         return render(request, template_name='produto/produto.html', context=context, status=200)
         return render(request, template_name='categoria/categoria.html', context=context, status=200)
         #return HttpResponse('<h1>Produto de id %s!</h1>' % id)
 
+def adicionar_carrinho(request, id):
+    carrinho = request.session.get('carrinho', {})
+    id = str(id)
+    if id in carrinho:
+        carrinho[id] += 1
+    else:
+        carrinho[id] = 1
+    request.session['carrinho'] = carrinho
+    return redirect('carrinho')
+
+def carrinho_view(request):
+    carrinho = request.session.get('carrinho', {})
+    itens = []
+    total = 0
+    for id, quantidade in carrinho.items():
+        produto = Produto.objects.filter(id=id).first()
+        if produto:
+            subtotal = produto.preco * quantidade
+            total += subtotal
+            itens.append({
+                'produto': produto,
+                'quantidade': quantidade,
+                'subtotal': subtotal
+            })
+    context = {
+        'itens': itens,
+        'total': total
+    }
+    return render(
+        request,
+        template_name='carrinho/carrinho.html',
+        context=context,
+        status=200
+    )
+
+def aumentar_quantidade(request, id):
+    carrinho = request.session.get('carrinho', {})
+    id = str(id)
+    if id in carrinho:
+        carrinho[id] += 1
+    request.session['carrinho'] = carrinho
+    return redirect('carrinho')
+
+def diminuir_quantidade(request, id):
+    carrinho = request.session.get('carrinho', {})
+    id = str(id)
+    if id in carrinho:
+        carrinho[id] -= 1
+        if carrinho[id] <= 0:
+            del carrinho[id]
+    request.session['carrinho'] = carrinho
+    return redirect('carrinho')
+
+def confirmar_compra(request):
+    carrinho = request.session.get('carrinho', {})
+    itens = []
+    total = 0
+    for id, quantidade in carrinho.items():
+        produto = Produto.objects.filter(id=id).first()
+        if produto:
+            subtotal = produto.preco * quantidade
+            total += subtotal
+            itens.append({
+                'produto': produto,
+                'quantidade': quantidade,
+                'subtotal': subtotal
+            })
+    request.session['carrinho'] = {}
+    context = {
+        'itens': itens,
+        'total': total
+    }
+    return render(
+        request,
+        template_name='carrinho/compra_confirmada.html',
+        context=context,
+        status=200
+    )
