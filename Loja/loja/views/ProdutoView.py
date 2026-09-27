@@ -255,3 +255,39 @@ def confirmar_compra(request):
         context=context,
         status=200
     )
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+from loja.models import Produto
+
+@login_required
+def favoritar_view(request, produto_id):
+    produto = get_object_or_404(
+        Produto,
+        id=produto_id
+    )
+    if request.user in produto.favoritos.all():
+
+        produto.favoritos.remove(
+            request.user
+        )
+    else:
+
+        produto.favoritos.add(
+            request.user
+        )
+    return redirect('home')
+
+@login_required
+def listar_favoritos_view(request):
+    produtos = Produto.objects.filter(
+        favoritos=request.user
+    )
+    context = {
+        'produtos': produtos
+    }
+    return render(
+        request,
+        'produto/favoritos.html',
+        context
+    )

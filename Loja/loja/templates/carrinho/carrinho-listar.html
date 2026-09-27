@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Carrinho{% endblock %}
+{% block title %}
+Carrinho
+{% endblock %}
 {% block styles %}
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
 {% block content %}
 <div id="content">
@@ -11,31 +13,47 @@
             <h3>Carrinho de Compras</h3>
         </div>
         <div class="row">
-            <a class="col-md-4">Produto</a> <a class="col-md-2">Quantidade</a> 
-            <a class="col-md-2">Preço</a> <a class="col-md-2">Total</a> </div>
+            <a class="col-md-3">Produto</a>
+            <a class="col-md-3">Quantidade</a>
+            <a class="col-md-2">Preço</a>
+            <a class="col-md-2">Total</a>
+            <a class="col-md-2">Ações</a>
+        </div>
         {% if itens %}
         {% for item in itens %}
-        <div class="row">
-            <a class="col-md-4"> {{ item.produto.Produto }}</a>
-            <a class="col-md-2"> {{ item.quantidade }}</a>
-            <a class="col-md-2">R$ {{ item.preco|floatformat:2 }}</a>
-            <a class="col-md-2">R$ {{ item.total }}</a>
-            <!-- Botão para excluir o item abaixo -->
-            <a class="col-md-2"> <form method="POST" action="{% url 'remover_carrinhoitem' item.id%}" style="display:inline;"> {% csrf_token %} <button type="submit" class="btn btn-danger">Excluir</button> </form> </a>
-            <!-- Botão para excluir o item acima -->
+        <div class="row align-items-center mt-3">
+            <div class="col-md-3">
+                {{ item.produto.Produto }}
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'diminuir_quantidade' item.id %}" class="btn btn-secondary"> - </a>
+                <span class="mx-2">
+                    {{ item.quantidade }}
+                </span>
+                <a href="{% url 'aumentar_quantidade' item.id %}" class="btn btn-secondary"> + </a>
+            </div>
+            <div class="col-md-2">
+                R$ {{ item.preco|floatformat:2 }}
+            </div>
+            <div class="col-md-2">
+                R$ {{ item.total|floatformat:2 }}
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'remover_carrinhoitem' item.id %}" class="btn btn-danger"> Excluir </a>
+            </div>
         </div>
         {% endfor %}
-        <h5 class="mt-4">Total: R$ {{ carrinho.total|floatformat:2 }}</h3>
+        <h5 class="mt-4">
+            Total: R$ {{ carrinho.total|floatformat:2 }}
+        </h5>
         <div class="mt-4">
-            <a href="{% url 'home' %}" class="btn btn-secondary">Voltar à loja</a>
-            <a href="{% url 'confirmar_carrinho' %}" class="btn btn-success">Finalizar Compra</a>
+            <a href="{% url 'home' %}" class="btn btn-secondary"> Voltar à loja </a>
+            <a href="{% url 'confirmar_carrinho' %}" class="btn btn-success"> Finalizar Compra </a>
         </div>
         {% else %}
-       <div class="alert alert-warning mt-4" role="alert">
-       Seu carrinho está vazio.
-       </div>
-       <a href="{% url 'home' %}" class="btn btn-primary mt-3">Ir à loja</a>
-       {% endif %}
+        <div class="alert alert-warning mt-4" role="alert"> Seu carrinho está vazio. </div>
+        <a href="{% url 'home' %}" class="btn btn-primary mt-3"> Ir à loja </a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
